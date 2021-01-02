@@ -241,3 +241,54 @@ addEmployee = () => {
     }) 
   })
 };
+
+viewEmployee = () => {
+  inquirer.prompt([
+    {
+      name: "viewChoice",
+      type: "list",
+      message: "What would you like to view?",
+      choices: ["DEPARTMENTS", "ROLES", "EMPLOYEES", "EXIT"]
+    }
+  ]).then(answer => {
+    if (answer.viewChoice === "DEPARTMENTS") {
+      viewDepartments();
+    }
+    else if (answer.viewChoice === "ROLES") {
+      viewRoles();
+    }
+    else if (answer.viewChoice === "EMPLOYEES") {
+      viewEmployees();
+    }
+    else if (answer.viewChoice === "EXIT") {
+    connection.end();
+    } else {
+      connection.end();
+    }
+  })
+};
+
+viewDepartments = () => {
+  connection.query("SELECT * FROM department", (err, res) => {
+    if (err) throw err;
+   
+    printTable(res);
+    start();
+  });
+};
+
+viewRoles = () => {
+  connection.query("SELECT  r.id, r.title, r.salary, d.name as Department_Name FROM role AS r INNER JOIN department AS d ON r.department_id = d.id", (err, res) => {
+    if (err) throw err;
+    printTable(res);
+    start();
+  });
+};
+
+viewEmployees = () => {
+  connection.query('SELECT e.id, e.first_name, e.last_name, d.name AS department, r.title, r.salary, CONCAT_WS(" ", m.first_name, m.last_name) AS manager FROM employee e LEFT JOIN employee m ON m.id = e.manager_id INNER JOIN role r ON e.role_id = r.id INNER JOIN department d ON r.department_id = d.id ORDER BY e.id ASC', (err, res) => {
+    if (err) throw err;
+    printTable(res);
+    start();
+  });
+};
