@@ -436,3 +436,131 @@ start();
     })
   })
 };
+
+deleteEmployee = () => {
+  inquirer.prompt([
+    {
+      name: "delete",
+      type: "list",
+      message: "Select something to delete:",
+      choices: ["Delete department", "Delete role", "Delete employee", "EXIT"]
+    }
+  ]).then(answer => {
+    if (answer.delete === "Delete department") {
+      deleteDepartment();
+    }
+    else if (answer.delete === "Delete role") {
+      deleteRole();
+    }
+    else if (answer.delete === "Delete employee") {
+      deleteEmployee();
+    } else if(answer.delete === "EXIT") {
+      connection.end();
+    }
+     else {
+      connection.end();
+    }
+  })
+};
+
+deleteDepartment = () => {
+  let departmentOptions = [];
+  for (var i = 0; i < departments.length; i++) {
+    departmentOptions.push(Object(departments[i]));
+  }
+
+  inquirer.prompt([
+    {
+      name: "deleteDepartment",
+      type: "list",
+      message: "Select a department to delete",
+      choices: function() {
+        var choiceArray = [];
+        for (var i = 0; i < departmentOptions.length; i++) {
+          choiceArray.push(departmentOptions[i])
+        }
+        return choiceArray;
+      }
+    }
+  ]).then(answer => {
+    for (i = 0; i < departmentOptions.length; i++) {
+      if (answer.deleteDepartment === departmentOptions[i].name) {
+        newChoice = departmentOptions[i].id
+        connection.query(`DELETE FROM department Where id = ${newChoice}`), (err, res) => {
+          if (err) throw err;
+        };
+        console.log("Department: " + answer.deleteDepartment + " Deleted Succesfully");
+      }
+    }
+    getDepartments();
+    start();
+  })
+};
+
+deleteRole = () => {
+  let roleOptions = [];
+  for (var i = 0; i < roles.length; i++) {
+    roleOptions.push(Object(roles[i]));
+  }
+
+  inquirer.prompt([
+    {
+      name: "deleteRole",
+      type: "list",
+      message: "Select a role to delete",
+      choices: function() {
+        var choiceArray = [];
+        for (var i = 0; i < roleOptions.length; i++) {
+          choiceArray.push(roleOptions[i].title)
+        }
+        return choiceArray;
+      }
+    }
+  ]).then(answer => {
+    for (i = 0; i < roleOptions.length; i++) {
+      if (answer.deleteRole === roleOptions[i].title) {
+        newChoice = roleOptions[i].id
+        connection.query(`DELETE FROM role Where id = ${newChoice}`), (err, res) => {
+          if (err) throw err;
+        };
+        console.log("Role: " + answer.deleteRole + " Deleted Succesfully");
+      }
+    }
+    getRoles();
+    start();
+  })
+};
+
+deleteEmployee = () => {
+  let employeeOptions = [];
+  for (var i = 0; i < employees.length; i++) {
+    employeeOptions.push(Object(employees[i]));
+  }
+
+  inquirer.prompt([
+    {
+      name: "deleteEmployee",
+      type: "list",
+      message: "Select a employee to delete",
+      choices: function() {
+        var choiceArray = [];
+        for (var i = 0; i < employeeOptions.length; i++) {
+          choiceArray.push(employeeOptions[i].Employee_Name)
+        }
+        return choiceArray;
+      }
+    }
+  ]).then(answer => {
+    for (i = 0; i < employeeOptions.length; i++) {
+      if (answer.deleteEmployee === employeeOptions[i].Employee_Name) {
+        newChoice = employeeOptions[i].id
+        connection.query(`DELETE FROM employee Where id = ${newChoice}`), (err, res) => {
+          if (err) throw err;
+        };
+        console.log("Employee: " + answer.deleteEmployee + " Deleted Succesfully");
+      }
+    }
+    getEmployees();
+    start();
+  })
+};
